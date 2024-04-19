@@ -8,18 +8,19 @@ namespace GalacticWar
     {
         private GraphicsDeviceManager _graphics;
         private SpriteBatch _spriteBatch;
+        private StartScreenMenu startScreenMenu;
+        private KeyboardState prevKeyboardState;
+        private  Texture2D backgroundStartScreen;
 
         public Game1()
         {
             _graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
-            IsMouseVisible = true;
+            IsMouseVisible = false;
         }
 
         protected override void Initialize()
         {
-            // TODO: Add your initialization logic here
-
             base.Initialize();
         }
 
@@ -27,15 +28,29 @@ namespace GalacticWar
         {
             _spriteBatch = new SpriteBatch(GraphicsDevice);
 
-            // TODO: use this.Content to load your game content here
+            // Загрузка фонового изображения для начального экрана
+            var backgroundStartScreen = Content.Load<Texture2D>("backgrounds/BackgroundStartPage");
+
+            // Загрузка текстур для кнопок
+            var playButtonTexture = Content.Load<Texture2D>("buttons/PlayBtn");
+            var playButtonClickTexture = Content.Load<Texture2D>("buttons/PlayClick");
+            var optButtonTexture = Content.Load<Texture2D>("buttons/OptBtn");
+            var optButtonClickTexture = Content.Load<Texture2D>("buttons/OptClick");
+            var exitButtonTexture = Content.Load<Texture2D>("buttons/ExitBtn");
+            var exitButtonClickTexture = Content.Load<Texture2D>("buttons/ExitClick");
+
+            // Создание экземпляра StartScreenMenu с передачей только текстур кнопок
+            startScreenMenu = new StartScreenMenu(backgroundStartScreen,
+                new Texture2D[] { playButtonTexture, optButtonTexture, exitButtonTexture },
+                new Texture2D[] { playButtonClickTexture, optButtonClickTexture, exitButtonClickTexture },
+                new Vector2[] { new (100, 100), new (100, 200), new (100, 300) });
         }
 
         protected override void Update(GameTime gameTime)
         {
-            if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
-                Exit();
+            Keyboard.GetState();
 
-            // TODO: Add your update logic here
+            startScreenMenu.Update();
 
             base.Update(gameTime);
         }
@@ -44,7 +59,11 @@ namespace GalacticWar
         {
             GraphicsDevice.Clear(Color.CornflowerBlue);
 
-            // TODO: Add your drawing code here
+            _spriteBatch.Begin();
+
+            startScreenMenu.Draw(_spriteBatch);
+
+            _spriteBatch.End();
 
             base.Draw(gameTime);
         }
